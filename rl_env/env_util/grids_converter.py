@@ -2,6 +2,7 @@ from OCC.Core.gp import gp_Pnt
 from OCC.Core.TopoDS import TopoDS_Shape    
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox
 from OCC.Core.BRepAlgoAPI import BRepAlgoAPI_Fuse
+import torch
 
 from rl_env.env_util.grids_util import GridsUtil
 from rl_env.grids_map.grids3d import Grids3D
@@ -85,3 +86,27 @@ class TopoDSShapeConvertor(GridsUtil):
         return fused_shape
         
 
+
+class TensorConvertor(GridsUtil):
+    def __init__(self, grids3d: Grids3D) -> None:
+        super().__init__()
+        self.grids3d: Grids3D = grids3d 
+        
+    
+    def convert(self) -> torch.FloatTensor:
+        """
+        Converts the grid map into a tensor.
+
+        Returns:
+            torch.FloatTensor: The tensor for final return.
+        """
+        tensor: torch.FloatTensor = torch.zeros((self.grids3d.map_size, self.grids3d.map_size, self.grids3d.map_size))
+        
+        for node in self.grids3d:
+            if node.is_obstacle:                  
+                x, y, z = node.i, node.j, node.k    
+                tensor[x][y][z] = 1.0
+        tensor = tensor.view(1, 1, *tensor.shape)
+        return tensor   
+        
+    

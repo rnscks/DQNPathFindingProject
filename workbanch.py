@@ -1,5 +1,9 @@
-from rl_env.env_util.grids_generator import RandomBoxGenerator3D
+import torch
 
+# 3차원 텐서 생성
+tensor = torch.zeros((10, 10, 10))
+print(tensor)
+# 배치 차원과 채널 차원 추가
+tensor = tensor.view(1, 1, *tensor.shape)  # (1, 1, 깊이, 높이, 너비)
 
-grids3d = RandomBoxGenerator3D(10, 10).generate((1, 1, 1), (9, 9, 9))
-
+print(tensor)
